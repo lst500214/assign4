@@ -13,7 +13,6 @@
   float spacingX = 100, spacingY = 50;
   float indexOne, indexTwo;
   float treasureDist;
-  //float [] enemyDist = new float[5];
   float [] enemyDistX = new float[8];
   float [] enemyDistY = new float[8];
   float [] enemyX = {-500, -400, -300, -200, -100};
@@ -129,8 +128,7 @@ void draw() {
       
     case GAME_RUN:
     
-     println("the first hp " + hpWeightX);
-     println(enemyDestroy[0],enemyDestroy[1],enemyDestroy[2],enemyDestroy[3],enemyDestroy[4]); 
+
       //infinite looping background
       image(bgOne, indexOne - width, 0);
       image(bgTwo, indexTwo - width, 0);
@@ -191,11 +189,11 @@ void draw() {
           //show flames//
           float flameX = enemyX[i];
           float flameY = enemyY;
-          println("the flame X, y position is: " + flameX, flameY);
+
             if (frameCount % (60/10) == 0){//show flames
               int c = (currentFrame ++) % numFrames;
               image(flames[c], flameX, flameY);
-              println("flames animation done");
+
             }
           
           hpWeightX = hpWeightX - percentage*20;
@@ -226,7 +224,7 @@ void draw() {
           enemyY = random(40, 219);
           constrain(enemyY, 40, 219);
           enemyPart = PART2;
-          println("part one done");
+
           enemySwitch = false;
         } 
     
@@ -239,7 +237,6 @@ void draw() {
           enemyX[3] = -200;
           enemyX[4] = -100;
           enemyPart = PART2;
-          println("part one done");
           enemySwitch = false;
         }
       }
@@ -249,10 +246,9 @@ void draw() {
       //part 2: lineslash enemys
       
       case PART2:
-      println("this is part 2");
             
       for(int i=0; i<5; i++){
-      println("the enemy x, y is: " + enemyX[i], enemyY2[i]);
+
       image(enemy, enemyX[i], enemyY2[i]);
       enemyX[i] += speed;
         
@@ -275,12 +271,10 @@ void draw() {
           //show flames//
           float flameX = enemyX[i];
           float flameY = enemyY+spacingY*(4-i);
-          println("the flame X, y position is: " + flameX, flameY);
           
           if (frameCount % (60/10) == 0){//show flames
             int c = (currentFrame ++) % numFrames;
             image(flames[c], flameX, flameY);
-            println("flames animation done");
           }
           
           hpWeightX = hpWeightX - percentage*20;
@@ -316,7 +310,6 @@ void draw() {
           enemyY = random(40, 219);
           constrain(enemyY, 40, 219);
           enemyPart = PART3;
-          println("part 2 done");
          enemySwitch = false;
         } 
     
@@ -329,7 +322,6 @@ void draw() {
           enemyX[4] = -100;
           enemyPart = PART3;
           enemySwitch = false;
-          println("part 2 done");
         }  
       }
       
@@ -338,7 +330,6 @@ void draw() {
       //part 3: a square enemys
       
       case PART3:
-      println("this is part 3");
       for(int i=0; i<8; i++){
         
        //float [] count = new float [5];     
@@ -371,17 +362,14 @@ void draw() {
       }
       
       if(touched[i] == true){
-          println("now is in the touched state");
          
           //show flames//
           float flameX = enemyX3[i];
           float flameY = enemyY3[i];
-          println("the flame X, y position is: " + flameX, flameY);
           
           if (frameCount % (60/10) == 0){//show flames
             int c = (currentFrame ++) % numFrames;
             image(flames[c], flameX, flameY);
-            println("flames animation done");
           }
           
           hpWeightX = hpWeightX - percentage*20;
@@ -420,11 +408,8 @@ void draw() {
           enemyX[2] = -300;
           enemyX[3] = -200;
           enemyX[4] = -100;
-          
           enemyY = random(40, 219);
-          println("the enemyY is: " + enemyY);
           enemyPart = PART1;
-          println("part one done");
         } 
     
         if(enemyX[0]<=-1000 && enemyX[1]<=-1000 && enemyX[2]<=-1000 && enemyX[3]<=-1000 && enemyX[4]<=-1000){
@@ -482,8 +467,6 @@ void draw() {
       image(hpBar, x, y);
       
       //game lose
-      
-      println("the end hp " + hpWeightX);
       
       if (hpWeightX <= 0){
       gameState = GAME_LOSE;
