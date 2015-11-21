@@ -8,18 +8,21 @@
 
   float x=0, y=0;
   float treasureX, treasureY;
+  float enemyY = floor(random(40,219));
   float percentage, hpWeightX, hpWeightY; 
-  //enemyY2, enemyY3;
-  float spacingX = 60, spacingY = 50;
+  float spacingX = 100, spacingY = 50;
   float indexOne, indexTwo;
-  //float [] enemyDist = new float [3];
-  float enemyDist;
   float treasureDist;
-  float [] enemyX;
-  float enemyY;
+  //float [] enemyDist = new float[5];
+  float [] enemyDistX = new float[8];
+  float [] enemyDistY = new float[8];
+  float [] enemyX = {-500, -400, -300, -200, -100};
+  float [] enemyX3 = {-500, -400, -400, -300, -300, -200, -200, -100}; 
+  float [] enemyY2 = {enemyY+240, enemyY+180, enemyY+120, enemyY+60, enemyY};
+  float [] enemyY3 = {enemyY+120, enemyY+60, enemyY+180, enemyY, enemyY+240, enemyY+60, enemyY+180, enemyY+120};
+  
   int currentFrame;
   int numFrames = 5;
-  int wave5 = 5;
   int gameState;
   int enemyPart;
   
@@ -29,8 +32,9 @@
   float jetY = 240;
   float jetH = 51;
   float jetW = 51;
-  boolean [] enemyDestroy = new boolean[wave5];
-  boolean [] touched = new boolean[wave5];
+  boolean [] enemyDestroy = new boolean[8];
+  boolean [] touched = new boolean[8];
+  boolean enemySwitch = false;
   boolean upPressed = false;
   boolean downPressed = false;
   boolean leftPressed = false;
@@ -66,13 +70,10 @@ void setup () {
     flames[f] = loadImage(imageName);
   }
   
-  //initialize enemy distance status
-  for(int b=0; b<5; b++){
-    enemyDestroy[b] = false;
-  }
-  
+  //initialize enemy detection states
   for(int t=0; t<touched.length; t++){
   touched[t] = false;
+  enemyDestroy[t] = false;
   }
   
   //X, Y setting for background
@@ -80,12 +81,11 @@ void setup () {
   indexTwo = 0;
   
   //initial enemy x position
-  enemyX = new float [wave5];
   enemyY = floor(random(40, 219));
+  
+  //treasure
   treasureX = floor(random(200,550));
   treasureY = floor(random(40,430));
-  
-  enemyX[0] = -250;
   
   //set HP Bar percentage
   percentage = 200/100;
@@ -130,7 +130,7 @@ void draw() {
     case GAME_RUN:
     
      println("the first hp " + hpWeightX);
-      
+     println(enemyDestroy[0],enemyDestroy[1],enemyDestroy[2],enemyDestroy[3],enemyDestroy[4]); 
       //infinite looping background
       image(bgOne, indexOne - width, 0);
       image(bgTwo, indexTwo - width, 0);
@@ -164,145 +164,291 @@ void draw() {
       switch(enemyPart){
      
       case PART1:  
+      
+      enemySwitch = false;
+      
       //part 1: a line of 5 enemys 
       for(int i=0; i<enemyX.length; i++){
-        enemyX[i] = enemyX[0]+spacingX*i;
+        image(enemy, enemyX[i], enemyY);
         enemyX[i] += speed;
-        println(enemyX[i], enemyY);
         
+      //initialize enemy detection states
+      for(int t=0; t<touched.length; t++){
+        touched[t] = false;
+        enemyDestroy[t] = false;
+      }
+      
         //enemy detection
-        //distance between jet and enemy
-        enemyDist= dist(jetX, jetY, enemyX[i], enemyY);
+       enemyDistX[i] = abs(jetX-enemyX[i]);
+       enemyDistY[i] = abs(jetY-enemyY); 
+       
+      if(enemyDistX[i] <= 51 && enemyDistY[i] <= 51){
+        touched[i] = true;
+      }
         
-        if(enemyDist <= 61){
-          //hp bar down 20 point
-          touched[i] = true;
+      if(touched[i] == true){
+         
+          //show flames//
+          float flameX = enemyX[i];
+          float flameY = enemyY;
+          println("the flame X, y position is: " + flameX, flameY);
+            if (frameCount % (60/10) == 0){//show flames
+              int c = (currentFrame ++) % numFrames;
+              image(flames[c], flameX, flameY);
+              println("flames animation done");
+            }
+          
+          hpWeightX = hpWeightX - percentage*20;
           enemyDestroy[i] = true;
-          
-          if(enemyX[i]>(jetX+250)){
-             touched[i] = false;
-          }
-          
-          //show flames
-          if (frameCount % (60/10) == 0){
-            int c = (currentFrame ++) % numFrames;
-            image(flames[c], enemyX[i], jetY);
-          }
         }
-        
+          
+          if(enemyDestroy[i] == true){
+          enemyX[i] = -9999;
+          enemyDistX[i] = abs(jetX-enemyX[i]);
+          enemyDistY[i] = abs(jetY-enemyY);
+          touched[i] = false;
+          }
+          
         if(enemyX[i] > width){
           enemyDestroy[i] = false;
-          }
-          
-        if(enemyX[i] > width+250){
-          enemyX[0]= -250;
+        }
+        
+        if(enemyX[i] > width+500){
+          enemySwitch = true;
+        }
+        
+        if(enemySwitch==true){
+          enemyX[0] = -500;
+          enemyX[1] = -400;
+          enemyX[2] = -300;
+          enemyX[3] = -200;
+          enemyX[4] = -100;
           enemyY = random(40, 219);
+          constrain(enemyY, 40, 219);
           enemyPart = PART2;
+          println("part one done");
+          enemySwitch = false;
+        } 
+    
+        if(enemyX[0]<=-1000 && enemyX[1]<=-1000 && enemyX[2]<=-1000 && enemyX[3]<=-1000 && enemyX[4]<=-1000){
+          enemyY = random(40, 219);
+          constrain(enemyY, 40, 219);
+          enemyX[0] = -500;
+          enemyX[1] = -400;
+          enemyX[2] = -300;
+          enemyX[3] = -200;
+          enemyX[4] = -100;
+          enemyPart = PART2;
+          println("part one done");
+          enemySwitch = false;
         }
-      
-        if(enemyDestroy[i] == false){
-          image(enemy, enemyX[i], enemyY);
-        }
-      } 
-      println(touched[0]);
+      }
+        
       break;
       
       //part 2: lineslash enemys
-    
+      
       case PART2:
-      for(int j=0; j<5; j++){  
-       int lineCount = 4-j;
-       enemyX[j] = enemyX[0]+spacingX*j;
-       enemyX[j] += speed;
+      println("this is part 2");
+            
+      for(int i=0; i<5; i++){
+      println("the enemy x, y is: " + enemyX[i], enemyY2[i]);
+      image(enemy, enemyX[i], enemyY2[i]);
+      enemyX[i] += speed;
         
-        //enemy detection
-        //distance between jet and enemy
-        enemyDist = dist(jetX, jetY, enemyX[j], enemyY+spacingY*lineCount);
-        
-        if(enemyDist <= 61){
-          //hp bar down 20 point
-          touched[1] = true;
-          enemyDestroy[j] = true;
-
-          //show flames
-          if (frameCount % (60/10) == 0){
-            int d = (currentFrame ++) % numFrames;
-            image(flames[d], enemyX[j], jetY);
-          }
-        }
-        
-        if(enemyX[j] > width){
-          enemyDestroy[j] = false;
-         }
-        
-         if(enemyX[j] >= width+250){
-           enemyX[0]=-250;
-           enemyY = random(40, 219);
-           enemyPart = PART3; 
-         }
-        if(enemyDestroy[j] == false){ 
-          image(enemy, enemyX[j], enemyY+spacingY*lineCount);
-        }
+      //initialize enemy detection states
+      for(int t=0; t<touched.length; t++){
+        touched[t] = false;
+        enemyDestroy[t] = false;
       }
+
+      //enemy detection
+       enemyDistX[i] = abs(jetX-enemyX[i]);
+       enemyDistY[i] = abs(jetY-enemyY2[i]); 
+       
+      if(enemyDistX[i] <= 51 && enemyDistY[i] <= 51){
+        touched[i] = true;
+      }
+        
+      if(touched[i] == true){
+         
+          //show flames//
+          float flameX = enemyX[i];
+          float flameY = enemyY+spacingY*(4-i);
+          println("the flame X, y position is: " + flameX, flameY);
+          
+          if (frameCount % (60/10) == 0){//show flames
+            int c = (currentFrame ++) % numFrames;
+            image(flames[c], flameX, flameY);
+            println("flames animation done");
+          }
+          
+          hpWeightX = hpWeightX - percentage*20;
+     
+          if(hpWeightX < 0){
+            hpWeightX = 0;
+          }
+          
+          enemyDestroy[i] = true;
+       }
+          
+       if(enemyDestroy[i] == true){
+         enemyX[i] = -9999;
+         enemyDistX[i] = abs(jetX-enemyX[i]);
+         enemyDistY[i] = abs(jetY-enemyY);
+         touched[i] = false;
+       }
+          
+        if(enemyX[i] > width){
+          enemyDestroy[i] = false;
+        }
+        
+        if(enemyX[i] > width+500){
+          enemySwitch = true;
+        }
+        
+        if(enemySwitch==true){
+          enemyX[0] = -500;
+          enemyX[1] = -400;
+          enemyX[2] = -300;
+          enemyX[3] = -200;
+          enemyX[4] = -100;
+          enemyY = random(40, 219);
+          constrain(enemyY, 40, 219);
+          enemyPart = PART3;
+          println("part 2 done");
+         enemySwitch = false;
+        } 
+    
+        if(enemyX[0]<=-1000 && enemyX[1]<=-1000 && enemyX[2]<=-1000 && enemyX[3]<=-1000 && enemyX[4]<=-1000){
+          enemyY = random(40, 219);
+          enemyX[0] = -500;
+          enemyX[1] = -400;
+          enemyX[2] = -300;
+          enemyX[3] = -200;
+          enemyX[4] = -100;
+          enemyPart = PART3;
+          enemySwitch = false;
+          println("part 2 done");
+        }  
+      }
+      
       break;
       
       //part 3: a square enemys
       
       case PART3:
-      for(int g=0; g<5; g++){
-       int Count = abs(2-g);
+      println("this is part 3");
+      for(int i=0; i<8; i++){
         
-        //upperEnemys
-        float part3_y = enemyY+spacingY*Count;
-        enemyX[g] = enemyX[0]+spacingX*g;
- 
-        //downEnemeys
-        float enemyY2 = enemyY+spacingY*4;
-        float part3_y2 = enemyY2-spacingY*Count; 
-        
-        enemyX[g] += speed;
-         
-        //distance between jet and enemy
-        enemyDist = dist(jetX, jetY, enemyX[g], part3_y);
-        
-        //enemy detection
-        if(enemyDist <= 61){
-          //hp bar down 20 point
-          touched[2] = true;
-          enemyDestroy[g] = true;
-          
-          //show flames
-          if (frameCount % (60/10) == 0){
-            int e = (currentFrame ++) % numFrames;
-            image(flames[e], enemyX[g], jetY);
-          }
-        }
-        
-        if(enemyX[g] > width){
-          enemyDestroy[g] = false;
-        }
-        
-        if(enemyX[g] >= width+250){
-          enemyX[0]=-250;
-          enemyY = random(40, 219);
-          enemyPart = PART1; 
-        }
-         
-        if(enemyDestroy[g] == false){ 
-          image(enemy, enemyX[g], part3_y);
-          image(enemy, enemyX[g], part3_y2);
-        }
-         
-        //println("the enemy distance is "+ enemyDist);
-        //println("the x position of enemy" + g + " is " + enemyX[g]);
-        //println("enemy State is:" + "[" + g +"]" + enemyDestroy[g]);
-       }
+       //float [] count = new float [5];     
+       //for(int a=0; a<count.length; a++){
+       //  count[a] = abs(2-a);
+       //}
+       
+       //float [] enemyY2 = new float [5];
+       //for(int b=0; b<enemyY2.length; b++){
+       //  float y2 = enemyY + spacingY*4;
+       //  enemyY2[b] = y2 - spacingY*count[b];
+       //}
+
+      image(enemy, enemyX3[i], enemyY3[i]);
+      enemyX3[i] += speed;
       
-      break;//part3 end 
+      //initialize enemy detection states
+        for(int t=0; t<touched.length; t++){
+          touched[t] = false;
+          enemyDestroy[t] = false;
+        }
+
+      //enemy detection
+       
+       enemyDistX[i] = abs(jetX-enemyX3[i]);
+       enemyDistY[i] = abs(jetY-enemyY3[i]); 
+       
+      if(enemyDistX[i] <= 51 && enemyDistY[i] <= 51){
+        touched[i] = true;
       }
       
-      //treasure
-      //when jet attach treasure
+      if(touched[i] == true){
+          println("now is in the touched state");
+         
+          //show flames//
+          float flameX = enemyX3[i];
+          float flameY = enemyY3[i];
+          println("the flame X, y position is: " + flameX, flameY);
+          
+          if (frameCount % (60/10) == 0){//show flames
+            int c = (currentFrame ++) % numFrames;
+            image(flames[c], flameX, flameY);
+            println("flames animation done");
+          }
+          
+          hpWeightX = hpWeightX - percentage*20;
+     
+          if(hpWeightX < 0){
+            hpWeightX = 0;
+          }
+          enemyDestroy[i] = true;
+       }
+          
+       if(enemyDestroy[i] == true){
+         enemyX3[i] = -9999;
+         enemyDistX[i] = abs(jetX-enemyX3[i]);
+         enemyDistY[i] = abs(jetY-enemyY3[i]);
+         touched[i] = false;
+       }
+          
+        if(enemyX3[i] > width){
+          enemyDestroy[i] = false;
+        }
+        
+        if(enemyX3[i] > width+500){
+          enemyY = random(40, 219);
+          enemySwitch = true;
+        }
+        
+        if(enemySwitch==true){
+          
+          enemyX3[0] = -500; enemyX3[1] = -400;
+          enemyX3[2] = -400; enemyX3[3] = -300;
+          enemyX3[4] = -300; enemyX3[5] = -200;
+          enemyX3[6] = -200; enemyX3[7] = -100;
+          
+          enemyX[0] = -500;
+          enemyX[1] = -400;
+          enemyX[2] = -300;
+          enemyX[3] = -200;
+          enemyX[4] = -100;
+          
+          enemyY = random(40, 219);
+          println("the enemyY is: " + enemyY);
+          enemyPart = PART1;
+          println("part one done");
+        } 
+    
+        if(enemyX[0]<=-1000 && enemyX[1]<=-1000 && enemyX[2]<=-1000 && enemyX[3]<=-1000 && enemyX[4]<=-1000){
+          enemyX3[0] = -500; enemyX3[1] = -400;
+          enemyX3[2] = -400; enemyX3[3] = -300;
+          enemyX3[4] = -300; enemyX3[5] = -200;
+          enemyX3[6] = -200; enemyX3[7] = -100;
+          
+          enemyX[0] = -500;
+          enemyX[1] = -400;
+          enemyX[2] = -300;
+          enemyX[3] = -200;
+          enemyX[4] = -100;
+          
+          enemyY = random(40, 219);
+          enemyPart = PART1;
+        }
+       
+      }
+      
+      break;//part3 end 
+      }//part switch end
+      
+      //jet attach treasure
       treasureDist = dist(jetX, jetY, treasureX, treasureY);
       
       if (treasureDist <= 41){
@@ -336,32 +482,41 @@ void draw() {
       image(hpBar, x, y);
       
       //game lose
-      for (int r=0; r<touched.length; r++){
-        if(touched[r] == true){
-          hpWeightX = hpWeightX - (percentage*20);
-        }   
-      }
+      
       println("the end hp " + hpWeightX);
       
-      //if (hpWeightX <= 0){
-      //gameState = GAME_LOSE;
-      //}
+      if (hpWeightX <= 0){
+      gameState = GAME_LOSE;
+      }
       
       break;
-      
-
+    
       
     case GAME_LOSE:
+      
+      enemyX3[0] = -500; enemyX3[1] = -400;
+      enemyX3[2] = -400; enemyX3[3] = -300;
+      enemyX3[4] = -300; enemyX3[5] = -200;
+      enemyX3[6] = -200; enemyX3[7] = -100; 
+      
+      enemyX[0] = -500;
+      enemyX[1] = -400;
+      enemyX[2] = -300;
+      enemyX[3] = -200;
+      enemyX[4] = -100;
       
       hpWeightX = percentage * 20;
       jetX = 580;
       jetY = 240;
       
-      enemyX[0] = -250;
-      for(int i=0; i<enemyX.length; i++){
-        enemyX[i] = enemyX[0]+spacingX*i;
+      for(int t=0; t<touched.length; t++){
+        touched[t] = false;
       }
-        
+      
+      for(int b=0; b<5; b++){
+        enemyDestroy[b] = false;
+      }
+      
       image(end, x, y);
 
       //mouse action and hover on start bg
@@ -370,7 +525,8 @@ void draw() {
         image(endHover, x, y);
         if (mousePressed){
           //click to start
-          gameState = GAME_RUN;
+          gameState = GAME_RUN; 
+          enemyPart = PART1;
           
         }
       }
