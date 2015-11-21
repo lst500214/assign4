@@ -487,7 +487,7 @@ void draw() {
       enemyX[2] = -300;
       enemyX[3] = -200;
       enemyX[4] = -100;
-      
+      enemyY = random(40, 219);
       hpWeightX = percentage * 20;
       jetX = 580;
       jetY = 240;
