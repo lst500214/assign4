@@ -1,3 +1,5 @@
+/* the latest version edited in 2015/11/22 11:58AM */
+
 //initialize 
   final int GAME_START = 0;
   final int GAME_RUN = 1;
