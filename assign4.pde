@@ -18,8 +18,8 @@
   float spacingX = 80, spacingY = 50;
   float indexOne, indexTwo;
   float treasureDist;
-  float [] enemyDistX = new float[8];
-  float [] bulletDist = new float[8];
+  //float [] enemyDistX = new float[8];
+  //float [] bulletDist = new float[8];
   float [][] enemyP1 = new float [5][2];
   float [][] enemyP2 = new float [5][2];
   float [][] enemyP3 = new float [8][2];
@@ -50,7 +50,6 @@
   boolean enterPressed = false;
   
   //loading image
-  //PImage [] enemy = new PImage [5];
   PImage enemy, jet, hpBar, treasure, bgOne, bgTwo, end, endHover, start, startHover, bullet; 
   
   
@@ -146,7 +145,6 @@ void draw() {
       break;
       
     case GAME_RUN:
-    
       //infinite looping background
       image(bgOne, indexOne - width, 0);
       image(bgTwo, indexTwo - width, 0);
@@ -455,7 +453,8 @@ void draw() {
       
       //reset enemy part 1 position
       enemyPart = PART1;
-      enemyY = floor(random(40, 219));    
+      enemyY = floor(random(40, 219));  
+      
       for (int i = 0; i < 5; i++){
         enemyP1 [i][0] = -500 + spacingX*i;
         enemyP1 [i][1] = enemyY; 
@@ -552,3 +551,4 @@ void keyReleased(){
     } 
   }
 }
+
