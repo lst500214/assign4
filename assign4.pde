@@ -424,11 +424,11 @@ void draw() {
       image(jet, jetX, jetY);
       
       //HP bar
-      scale(1,1);
       fill(#FF0000);
       noStroke();
       rect(6, y, hpWeightX, hpWeightY);
       image(hpBar, x, y);
+      println(hpWeightX);
       
       //game lose
       
