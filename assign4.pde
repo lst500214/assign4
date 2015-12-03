@@ -24,6 +24,9 @@
   float [][] enemyP2 = new float [5][2];
   float [][] enemyP3 = new float [8][2];
   
+  //text setting
+  int newScore = 0;
+  
   //flame
   int flamesNum = 0;
   int currentFrame = 0;
@@ -153,6 +156,11 @@ void draw() {
       indexOne %= width*2;
       indexTwo %= width*2;
 
+      //text
+      textSize(28);
+      fill(200);
+      text("Score: " + newScore, 15, 460);  
+
       //jet moving
        if (upPressed) 
          jetY -= speed;
@@ -210,6 +218,7 @@ void draw() {
             flamePos[q][0] = enemyP1[i][0];
             flamePos[q][1] = enemyP1[i][1];
           }
+          newScore = scoreChange(20);
           enemyP1[i][0] = -9999;
           enemyP1[i][1] = enemyY = floor(random(40,219));
           isShoot[i] = false;
@@ -271,6 +280,7 @@ void draw() {
               flamePos[q][0] = enemyP2[i][0];
               flamePos[q][1] = enemyP2[i][1];
             }
+            newScore = scoreChange(20);
             enemyP2[i][0] = -9999;
             enemyP2[i][1] = enemyY = floor(random(40,219));
             isShoot[i] = false;
@@ -353,6 +363,7 @@ void draw() {
               flamePos[q][0] = enemyP3[i][0];
               flamePos[q][1] = enemyP3[i][1];
             }
+            newScore = scoreChange(20);
             enemyP3[i][0] = -9999;
             enemyP3[i][1] = enemyY = floor(random(40,219));
             isShoot[i] = false;
@@ -463,6 +474,7 @@ void draw() {
         isShoot[i] = false;
       }
       
+      newScore = 0;
       hpWeightX = percentage * 20;
       jetX = 580;
       jetY = 240;
@@ -552,3 +564,6 @@ void keyReleased(){
   }
 }
 
+int scoreChange (int value){
+  return(newScore + value);
+}
